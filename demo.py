@@ -4,9 +4,12 @@ from flask_sqlalchemy import SQLAlchemy
 from myaudio import printWAV
 import time, random, threading
 from turbo_flask import Turbo
+#import Bcrypt
+from flask_bcrypt import Bcrypt
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = 'a5330bed949771bc9b0dc67e08b00274'
+bcrypt = Bcrypt(app)
 
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///site.db'
 db = SQLAlchemy(app)
@@ -36,12 +39,15 @@ def second_page():
 @app.route("/register", methods=['GET', 'POST'])
 def register():
     form = RegistrationForm()
-    if form.validate_on_submit(): # checks if entries are valid
-      user = User(username=form.username.data, email=form.email.data, password=form.password.data)
-      db.session.add(user)
-      db.session.commit()
-      flash(f'Account created for {form.username.data}!', 'success')
-      return redirect(url_for('home')) # if so - send to home page
+    if form.validate_on_submit():   # checks if entries are valid
+        pw_hash = bcrypt.generate_password_hash(form.password.data) #pulls the password's form
+        if bcrypt.check_password_hash(pw_hash, form.password.data):
+            print(pw_hash)
+            user = User(username=form.username.data, email=form.email.data, password = pw_hash)  
+            db.session.add(user)
+            db.session.commit()
+            flash(f'Account created for {form.username.data}!', 'success')
+            return redirect(url_for('home')) # if so - send to home page
     return render_template('register.html', title='Register', form=form)
   
   
