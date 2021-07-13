@@ -36,6 +36,14 @@ def register():
       flash(f'Account created for {form.username.data}!', 'success')
       return redirect(url_for('home')) # if so - send to home page
     return render_template('register.html', title='Register', form=form)
+  
+  
+@app.route("/captions")
+def captions():
+    TITLE = "audio_file_name"
+    FILE_NAME = "examples_english.wav"
+    return render_template('captions.html', songName=TITLE, file=FILE_NAME)
+
     
 if __name__ == '__main__':
     app.run(debug=True, host="0.0.0.0")
