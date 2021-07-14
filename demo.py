@@ -6,6 +6,7 @@ import time, random, threading
 from turbo_flask import Turbo
 #import Bcrypt
 from flask_bcrypt import Bcrypt
+from sqlalchemy import exc
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = 'a5330bed949771bc9b0dc67e08b00274'
@@ -40,14 +41,20 @@ def second_page():
 def register():
     form = RegistrationForm()
     if form.validate_on_submit():   # checks if entries are valid
-        pw_hash = bcrypt.generate_password_hash(form.password.data) #pulls the password's form
+        try:
+            pw_hash = bcrypt.generate_password_hash(form.password.data) #pulls the password's form
+        except ValueError:
+            print('hashed password is empty')
         if bcrypt.check_password_hash(pw_hash, form.password.data):
-            print(pw_hash)
             user = User(username=form.username.data, email=form.email.data, password = pw_hash)  
             db.session.add(user)
-            db.session.commit()
-            flash(f'Account created for {form.username.data}!', 'success')
-            return redirect(url_for('home')) # if so - send to home page
+            try:
+                db.session.commit()
+            except exc.IntegrityError: #happens when you have same username twice
+                print('can not have the same username')
+            else:
+                flash(f'Account created for {form.username.data}!', 'success')
+                return redirect(url_for('home')) # if so - send to home page
     return render_template('register.html', title='Register', form=form)
   
   
