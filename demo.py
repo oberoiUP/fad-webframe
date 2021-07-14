@@ -43,6 +43,7 @@ def register():
     if form.validate_on_submit():   # checks if entries are valid
         try:
             pw_hash = bcrypt.generate_password_hash(form.password.data) #pulls the password's form
+            print(pw_hash) #prints the password in hash format
         except ValueError:
             print('hashed password is empty')
         if bcrypt.check_password_hash(pw_hash, form.password.data):
