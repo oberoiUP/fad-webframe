@@ -11,7 +11,4 @@ flask_behind_proxy==0.1.1
 flask_sqlalchemy
 pytest
 pycodestyle
-SpeechRecognition
-flask_bcrypt
-turbo_flask
 
