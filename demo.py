@@ -8,6 +8,7 @@ from turbo_flask import Turbo
 from flask_bcrypt import Bcrypt
 from sqlalchemy import exc
 
+
 app = Flask(__name__)
 app.config['SECRET_KEY'] = 'a5330bed949771bc9b0dc67e08b00274'
 bcrypt = Bcrypt(app)
